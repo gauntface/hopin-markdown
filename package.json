@@ -1,0 +1,59 @@
+{
+  "scripts": {
+    "ava": "npm run build && nyc ava ./test/**/*-test.js --verbose",
+    "build": "gulp build",
+    "lint": "tslint 'src/**/*'",
+    "report-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "test": "npm run ava && npm run lint"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "nyc": {
+    "reporter": [
+      "text",
+      "html"
+    ]
+  },
+  "devDependencies": {
+    "@hopin/wbt-config": "0.0.2",
+    "@hopin/wbt-ts-node": "0.0.2",
+    "@types/fs-extra": "5.0.4",
+    "@types/marked": "^0.4.0",
+    "@types/prismjs": "^1.9.0",
+    "ava": "0.25.0",
+    "coveralls": "3.0.2",
+    "fs-extra": "^7.0.0",
+    "gulp": "^4.0.0",
+    "nyc": "^12.0.2",
+    "sinon": "^6.1.5"
+  },
+  "dependencies": {
+    "@hopin/logger": "0.0.4",
+    "chalk": "^2.4.1",
+    "marked": "^0.5.0",
+    "prismjs": "^1.15.0"
+  },
+  "keywords": [
+    "hopin",
+    "markdown"
+  ],
+  "files": [
+    "build/**/*"
+  ],
+  "homepage": "https://github.com/gauntface/hopin-markdown#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gauntface/hopin-markdown.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gauntface/hopin-markdown/issues"
+  },
+  "name": "@hopin/render",
+  "description": "Module to render Markdown to HTML.",
+  "author": "gauntface",
+  "license": "Apache-2.0",
+  "main": "./build/index.js",
+  "typings": "./build/index.d.ts",
+  "version": "2.0.0"
+}
