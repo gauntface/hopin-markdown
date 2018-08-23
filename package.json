@@ -19,7 +19,7 @@
     "@hopin/wbt-config": "0.0.2",
     "@hopin/wbt-ts-node": "0.0.2",
     "@types/fs-extra": "5.0.4",
-    "@types/marked": "0.4.0",
+    "@types/marked": "0.4.1",
     "@types/prismjs": "1.9.0",
     "ava": "0.25.0",
     "coveralls": "3.0.2",
