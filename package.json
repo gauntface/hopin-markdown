@@ -50,7 +50,7 @@
   "bugs": {
     "url": "https://github.com/gauntface/hopin-markdown/issues"
   },
-  "name": "@hopin/render",
+  "name": "@hopin/markdown",
   "description": "Module to render Markdown to HTML.",
   "author": "gauntface",
   "license": "Apache-2.0",

@@ -16,6 +16,13 @@
 <img alt="Jake Hair" src="https://media.giphy.com/media/BAWzRp10SgBZ6/giphy.gif" />
 </p>
 
+## Installation
+
+```
+npm install @hopin/markdown --save
+```
+
+
 ## Usage in Node
 
 ```javascript
