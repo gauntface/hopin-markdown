@@ -2,6 +2,8 @@ import {marked} from './utils/marked-promise';
 import {CustomRender, Token} from './custom-renderer';
 import {logger} from './utils/logger';
 
+export {Token};
+
 export type Render = {
   html: string
   tokens: Array<Token>
