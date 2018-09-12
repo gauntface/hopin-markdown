@@ -1,7 +1,6 @@
 import * as marked from 'marked';
 import * as prism from 'prismjs';
-
-import {logger} from './utils/logger';
+import {logger} from '@hopin/logger';
 
 export type TokenH1 = 'h1';
 export type TokenH2 = 'h2';

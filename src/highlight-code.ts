@@ -1,6 +1,5 @@
 import * as prism from 'prismjs';
-
-import {logger} from './utils/logger';
+import {logger} from '@hopin/logger';
 
 type HighlightedCode = {
   html: string
