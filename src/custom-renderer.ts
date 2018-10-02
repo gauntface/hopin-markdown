@@ -10,7 +10,7 @@ export type TokenH5 = 'h5';
 export type TokenH6 = 'h6';
 export type TokenPre = 'pre';
 export type TokenCode = 'code';
-export type TokenCodeJS = 'code-javascript';
+export type TokenCodeHighlighted = 'code-highlighted';
 export type TokenImg = 'img';
 export type TokenBlockQuote = 'blockquote';
 export type TokenHTML = 'rawhtml';
@@ -40,7 +40,7 @@ export type Token =
   TokenH6 |
   TokenPre |
   TokenCode |
-  TokenCodeJS |
+  TokenCodeHighlighted |
   TokenImg |
   TokenBlockQuote |
   TokenHTML |
@@ -60,10 +60,11 @@ export type Token =
   TokenTR |
   TokenTD |
   TokenTH
-; 
+;
 
 const SupportedLanguages = [
   'javascript',
+  'html',
 ];
 
 export class CustomRender extends marked.Renderer {
@@ -89,14 +90,14 @@ export class CustomRender extends marked.Renderer {
           break;
         }
         default:
-          
+
       }
     }*/
 
     // If it's an unknown / unsupported language, prevent extra markup that
     // won't get used.
     if (language && SupportedLanguages.indexOf(language) == -1) {
-      logger.warn(`lanugage '${language}' was not identified for syntax highlighting.`);  
+      logger.warn(`lanugage '${language}' was not identified for syntax highlighting.`);
       language = null;
     }
 
@@ -105,13 +106,13 @@ export class CustomRender extends marked.Renderer {
       try {
         code = prism.highlight(code, prismLang);
         isEscaped = true;
-        this.tokensUsed.add('code-javascript');
+        this.tokensUsed.add('code-highlighted');
       } catch(err) {
         language = null;
         logger.warn(`An error occured while highlighting code with Prism:`, err);
       }
     }
-    
+
     return super.code(code, language, isEscaped);
   }
 
@@ -121,12 +122,12 @@ export class CustomRender extends marked.Renderer {
   }
 
   // Methods are this are here just to collect tokens
-  
+
   blockquote(quote: string): string {
     this.tokensUsed.add('blockquote');
     return super.blockquote(quote);
   }
-  
+
   html(html: string): string {
     this.tokensUsed.add('rawhtml');
     return super.html(html);
@@ -194,7 +195,7 @@ export class CustomRender extends marked.Renderer {
     this.tokensUsed.add(`code`);
     return super.codespan(code);
   }
-  
+
   br(): string {
     this.tokensUsed.add('br');
     return super.br()
