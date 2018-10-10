@@ -1,4 +1,5 @@
 import {logger} from '@hopin/logger';
+import * as path from 'path';
 
 import {marked} from './utils/marked-promise';
 import {CustomRender, Token} from './custom-renderer';
@@ -12,12 +13,20 @@ export type Render = {
   tokens: Array<Token>
 }
 
-export async function renderMarkdown(markdown: any): Promise<Render> {
+export type RenderOpts = {
+  staticDir?: string
+}
+
+export async function renderMarkdown(markdown: any, opts: RenderOpts = {}): Promise<Render> {
   if (typeof markdown != 'string') {
     throw new Error(`You must provide a string to renderMarkdown(); got ${JSON.stringify(markdown)}` );
   }
 
-  const renderer = new CustomRender();
+  if (opts.staticDir) {
+    opts.staticDir = path.resolve(opts.staticDir);
+  }
+
+  const renderer = new CustomRender(opts.staticDir);
   const result = await marked(markdown, {renderer});
   const tokens = renderer.getTokens();
   return {

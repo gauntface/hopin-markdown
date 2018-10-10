@@ -1,5 +1,8 @@
 import * as marked from 'marked';
 import * as prism from 'prismjs';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as glob from 'glob';
 import {logger} from '@hopin/logger';
 
 export type TokenH1 = 'h1';
@@ -12,6 +15,7 @@ export type TokenPre = 'pre';
 export type TokenCode = 'code';
 export type TokenCodeHighlighted = 'code-highlighted';
 export type TokenImg = 'img';
+export type TokenAsyncImg = 'async-img';
 export type TokenBlockQuote = 'blockquote';
 export type TokenHTML = 'rawhtml';
 export type TokenHR = 'hr';
@@ -42,6 +46,7 @@ export type Token =
   TokenCode |
   TokenCodeHighlighted |
   TokenImg |
+  TokenAsyncImg |
   TokenBlockQuote |
   TokenHTML |
   TokenHR |
@@ -69,9 +74,11 @@ const SupportedLanguages = [
 
 export class CustomRender extends marked.Renderer {
   private tokensUsed: Set<Token>
+  private staticDir: string|null
 
-  constructor() {
+  constructor(staticDir: string|null) {
     super();
+    this.staticDir = staticDir;
     this.tokensUsed = new Set<Token>([]);
   }
 
@@ -118,6 +125,73 @@ export class CustomRender extends marked.Renderer {
 
   image(href: string, title: string, text: string): string {
     this.tokensUsed.add(`img`);
+
+    if (path.extname(href) === '.gif') {
+      this.tokensUsed.add(`async-img`);
+      return `<img data-src="${href}" alt="${text}" />`
+    }
+
+    if (href.indexOf('http') === 0) {
+      // External image, no src-set
+      return super.image(href, title, text);
+    }
+
+    const imgDir = path.join(this.staticDir, href);
+    try {
+      const stats = fs.statSync(imgDir);
+      if (stats.isDirectory) {
+        const availableImages = glob.sync('*.*', {
+          cwd: imgDir,
+        })
+
+        const nonWebPImages = availableImages.filter((availableImage) => {
+          return !(path.extname(availableImage) === '.webp');
+        });
+        const webPImages = availableImages.filter((availableImage) => {
+          return (path.extname(availableImage) === '.webp');
+        });
+
+        let largestSrc: string|null = null;
+        let largestWidth: number = 0;
+        const srcSet = nonWebPImages.map((imagePath) => {
+          const imgUrl = path.join(
+            href,
+            imagePath
+          );
+          const imgWidth = parseInt(
+            path.basename(imagePath, path.extname(imagePath)), 10);
+
+          if (!largestSrc || largestWidth < imgWidth) {
+            largestSrc = imgUrl;
+            largestWidth = imgWidth;
+          }
+
+          return `${imgUrl} ${imgWidth}w`;
+        }).join(', ');
+
+        const webpSrcSet = webPImages.map((imagePath) => {
+          const imgUrl = path.join(
+            href,
+            imagePath
+          );
+          const imgWidth = parseInt(
+            path.basename(imagePath, path.extname(imagePath)), 10);
+
+          return `${imgUrl} ${imgWidth}w`;
+        }).join(', ') || null;
+
+        let htmlMarkup = '<picture>';
+        if (webpSrcSet) {
+          htmlMarkup += `<source srcset="${webpSrcSet}" type="image/webp">`;
+        }
+        htmlMarkup += `<source srcset="${srcSet}">`;
+        htmlMarkup += `<img src="/${largestSrc}" alt="${text}" />`;
+        htmlMarkup += '</picture>';
+        return htmlMarkup;
+      }
+    } catch (err) {
+      // NOOP
+    }
     return super.image(href, title, text);
   }
 

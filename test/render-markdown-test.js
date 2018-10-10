@@ -102,13 +102,13 @@ test('renderMarkdown() should render plain code block', async (t) => {
 test('renderMarkdown() should syntax highlight Javascript code block', async (t) => {
 	const render = await renderMarkdown('```javascript\nconsole.log(\'Hello World\');\n```');
   t.deepEqual(render.html, '<pre><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">\'Hello World\'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>');
-  t.deepEqual(render.tokens, ['pre', 'code', 'code-javascript'].sort());
+  t.deepEqual(render.tokens, ['pre', 'code', 'code-highlighted'].sort());
 });
 
 /* test('renderMarkdown() should syntax highlight Javascript code block with first line entry', async (t) => {
 	const render = await renderMarkdown('```\njavascript\nconsole.log(\'Hello World\');\n```');
   t.deepEqual(render.html, '<pre><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">\'Hello World\'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>');
-  t.deepEqual(render.tokens, ['pre', 'code', 'code-javascript'].sort());
+  t.deepEqual(render.tokens, ['pre', 'code', 'code-highlighted'].sort());
 });*/
 
 test('renderMarkdown() should render plain code block for unknown language', async (t) => {
@@ -199,7 +199,7 @@ test.serial('renderMarkdown() should render plain code block is prism throws an 
   sandbox.stub(prism, 'highlight').callsFake(() => {
     throw new Error('prism.highlight() error');
   });
-  
+
   const render = await renderMarkdown('```javascript\nconsole.log(\'Hello World\');\n```');
   t.deepEqual(render.html, '<pre><code>console.log(&#39;Hello World&#39;);</code></pre>');
   t.deepEqual(render.tokens, ['pre', 'code'].sort());
