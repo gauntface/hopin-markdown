@@ -131,7 +131,7 @@ export class CustomRender extends marked.Renderer {
       return `<img data-src="${href}" alt="${text}" />`
     }
 
-    if (href.indexOf('http') === 0) {
+    if (href.indexOf('http') === 0 || !this.staticDir) {
       // External image, no src-set
       return super.image(href, title, text);
     }
