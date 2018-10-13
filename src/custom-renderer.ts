@@ -5,6 +5,8 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import {logger} from '@hopin/logger';
 
+const loadLanguages = require('prismjs/components/index');
+
 export type TokenH1 = 'h1';
 export type TokenH2 = 'h2';
 export type TokenH3 = 'h3';
@@ -67,10 +69,28 @@ export type Token =
   TokenTH
 ;
 
-const SupportedLanguages = [
+const PrismLanguages = [
   'javascript',
-  'html',
+  'python',
+  'css',
+  'css-extras',
+  'bash',
+  'java',
+  'go',
+  'typescript',
+  'php',
+  'sass',
 ];
+
+const SupportedLanguages = [
+  ...PrismLanguages,
+  'html',
+  'xml',
+];
+
+// Prism does not load certain languages but will highlight them
+// hence the seperate lists
+loadLanguages(PrismLanguages);
 
 export class CustomRender extends marked.Renderer {
   private tokensUsed: Set<Token>
