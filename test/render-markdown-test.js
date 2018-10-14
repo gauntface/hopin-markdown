@@ -89,7 +89,7 @@ test('renderMarkdown() should render unordered list', async (t) => {
 
 test('renderMarkdown() should render ordered list', async (t) => {
 	const render = await renderMarkdown('1. Hello World');
-  t.deepEqual(render.html, '<ol start="undefined">\n<li>Hello World</li>\n</ol>');
+  t.deepEqual(render.html, '<ol>\n<li>Hello World</li>\n</ol>');
   t.deepEqual(render.tokens, ['ol', 'li'].sort());
 });
 
