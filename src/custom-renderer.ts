@@ -238,9 +238,9 @@ export class CustomRender extends marked.Renderer {
     return super.hr();
   }
 
-  list(body: string, ordered: boolean): string {
+  list(body: string, ordered: boolean, start: number): string {
     this.tokensUsed.add(ordered ? `ol` : `ul`);
-    return super.list(body, ordered);
+    return super.list(body, ordered, start);
   }
 
   listitem(text: string): string {
