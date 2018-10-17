@@ -1,10 +1,8 @@
-import {logger} from '@hopin/logger';
 import * as path from 'path';
 
+import {logger} from './utils/logger';
 import {marked} from './utils/marked-promise';
 import {CustomRender, Token} from './custom-renderer';
-
-logger.setPrefix('[@hopin/markdown]');
 
 export {Token};
 

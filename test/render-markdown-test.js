@@ -184,6 +184,34 @@ test('renderMarkdown() should render image', async (t) => {
   t.deepEqual(render.tokens, ['p', 'img'].sort());
 });
 
+test('renderMarkdown() should render HTML img with gif as data-src', async (t) => {
+	const render = await renderMarkdown(`![Alt Text](./images/example.gif)`);
+  t.deepEqual(render.html, '<p><img data-src="./images/example.gif" alt="Alt Text"></p>');
+  t.deepEqual(render.tokens, ['p', 'img', 'async-img'].sort());
+});
+
+test('renderMarkdown() should render image with http:// at start as plain image', async (t) => {
+  const render = await renderMarkdown(`![Alt Text](http://example.com/images/example.png)`);
+  t.deepEqual(render.html, '<p><img src="http://example.com/images/example.png" alt="Alt Text"></p>');
+  t.deepEqual(render.tokens, ['p', 'img'].sort());
+});
+
+test('renderMarkdown() should render image as src set if image is available', async (t) => {
+  const render = await renderMarkdown(`![Alt Text](/picture-sets/basic.jpg)`, {
+    staticDir: path.join(__dirname, 'static'),
+  });
+  t.deepEqual(render.html, '<p><picture><source srcset="/picture-sets/basic.jpg/1.webp 1w, /picture-sets/basic.jpg/2.webp 2w" type="image/webp"><source srcset="/picture-sets/basic.jpg/1.jpg 1w, /picture-sets/basic.jpg/2.jpg 2w"><img src="/picture-sets/basic.jpg/2.jpg" alt="Alt Text" /></picture></p>');
+  t.deepEqual(render.tokens, ['p', 'img', 'picture'].sort());
+});
+
+test('renderMarkdown() should handle the image being a file instead of a directory', async (t) => {
+  const render = await renderMarkdown(`![Alt Text](/picture-sets/non-directory-image.jpg)`, {
+    staticDir: path.join(__dirname, 'static'),
+  });
+  t.deepEqual(render.html, '<p><img src="/picture-sets/non-directory-image.jpg" alt="Alt Text"></p>');
+  t.deepEqual(render.tokens, ['p', 'img'].sort());
+});
+
 const sandbox = sinon.createSandbox();
 
 test.beforeEach(() => {

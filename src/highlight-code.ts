@@ -1,5 +1,6 @@
 import * as prism from 'prismjs';
-import {logger} from '@hopin/logger';
+
+import {logger} from './utils/logger';
 
 type HighlightedCode = {
   html: string
@@ -28,7 +29,7 @@ export function highlightCode(code: string, lang: string): HighlightedCode {
       html: code,
     };
   }
-  
+
   const prismLang = prism.languages[lang];
   if (!prismLang) {
     logger.warn(`Prism does not support language: ${lang}`);
