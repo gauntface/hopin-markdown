@@ -3,7 +3,8 @@ import * as prism from 'prismjs';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
-import {logger} from '@hopin/logger';
+
+import {logger} from './utils/logger';
 
 const loadLanguages = require('prismjs/components/index');
 
@@ -17,6 +18,7 @@ export type TokenPre = 'pre';
 export type TokenCode = 'code';
 export type TokenCodeHighlighted = 'code-highlighted';
 export type TokenImg = 'img';
+export type TokenPicture = 'picture';
 export type TokenAsyncImg = 'async-img';
 export type TokenBlockQuote = 'blockquote';
 export type TokenHTML = 'rawhtml';
@@ -49,6 +51,7 @@ export type Token =
   TokenCodeHighlighted |
   TokenImg |
   TokenAsyncImg |
+  TokenPicture |
   TokenBlockQuote |
   TokenHTML |
   TokenHR |
@@ -106,21 +109,6 @@ export class CustomRender extends marked.Renderer {
     this.tokensUsed.add('pre');
     this.tokensUsed.add('code');
 
-    // If there is no lang here, we might be able to detect the language from the first line
-    /* if (!language) {
-      const lines = code.split('\n');
-      const firstLine = lines.splice(0,1)[0].trim();
-      switch(firstLine) {
-        case 'javascript': {
-          language = firstLine;
-          code = lines.join('\n');
-          break;
-        }
-        default:
-
-      }
-    }*/
-
     // If it's an unknown / unsupported language, prevent extra markup that
     // won't get used.
     if (language && SupportedLanguages.indexOf(language) == -1) {
@@ -148,7 +136,7 @@ export class CustomRender extends marked.Renderer {
 
     if (path.extname(href) === '.gif') {
       this.tokensUsed.add(`async-img`);
-      return `<img data-src="${href}" alt="${text}" />`
+      return `<img data-src="${href}" alt="${text}">`
     }
 
     if (href.indexOf('http') === 0 || !this.staticDir) {
@@ -159,7 +147,7 @@ export class CustomRender extends marked.Renderer {
     const imgDir = path.join(this.staticDir, href);
     try {
       const stats = fs.statSync(imgDir);
-      if (stats.isDirectory) {
+      if (stats.isDirectory()) {
         const availableImages = glob.sync('*.*', {
           cwd: imgDir,
         })
@@ -198,15 +186,18 @@ export class CustomRender extends marked.Renderer {
             path.basename(imagePath, path.extname(imagePath)), 10);
 
           return `${imgUrl} ${imgWidth}w`;
-        }).join(', ') || null;
+        }).join(', ');
 
         let htmlMarkup = '<picture>';
         if (webpSrcSet) {
           htmlMarkup += `<source srcset="${webpSrcSet}" type="image/webp">`;
         }
         htmlMarkup += `<source srcset="${srcSet}">`;
-        htmlMarkup += `<img src="/${largestSrc}" alt="${text}" />`;
+        htmlMarkup += `<img src="${largestSrc}" alt="${text}" />`;
         htmlMarkup += '</picture>';
+
+        this.tokensUsed.add('picture');
+
         return htmlMarkup;
       }
     } catch (err) {
