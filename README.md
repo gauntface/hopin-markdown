@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://travis-ci.org/gauntface/hopin-markdown"><img src="https://travis-ci.org/gauntface/hopin-markdown.svg?branch=master" alt="Travis Build Status" /></a>
-  <a href="https://coveralls.io/github/gauntface/hopin-markdown?branch=master"><img src="https://coveralls.io/repos/github/gauntface/hopin-markdown/badge.svg?branch=master" alt="Coverage Status" /></a>
+  <a href="https://coveralls.io/github/gauntface/hopin-markdown?branch=master"><img src="https://img.shields.io/coveralls/github/gauntface/hopin-markdown.svg" alt="Coverage Status" /></a>
   <a href="https://david-dm.org/gauntface/hopin-markdown" title="dependencies status"><img src="https://david-dm.org/gauntface/hopin-markdown/status.svg"/></a>
   <a href="https://david-dm.org/gauntface/hopin-markdown?type=dev" title="devDependencies status"><img src="https://david-dm.org/gauntface/hopin-markdown/dev-status.svg"/></a>
   <a href="https://david-dm.org/gauntface/hopin-markdown?type=peer" title="peerDependencies status"><img src="https://david-dm.org/gauntface/hopin-markdown/peer-status.svg"/></a>
