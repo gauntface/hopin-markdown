@@ -18,7 +18,7 @@
   "devDependencies": {
     "@hopin/wbt-ts-node": "0.0.17",
     "@types/fs-extra": "5.0.4",
-    "@types/marked": "0.5.0",
+    "@types/marked": "0.6.0",
     "@types/prismjs": "1.9.0",
     "ava": "1.0.1",
     "coveralls": "3.0.2",
@@ -32,7 +32,7 @@
     "@hopin/logger": "^2.0.0",
     "@types/glob": "^7.1.1",
     "chalk": "^2.4.1",
-    "marked": "^0.5.1",
+    "marked": "^0.6.0",
     "prismjs": "^1.15.0"
   },
   "keywords": [
