@@ -218,10 +218,10 @@ export class CustomRender extends marked.Renderer {
     return super.html(html);
   }
 
-  heading(text: string, level: number, raw: string): string {
+  heading(text: string, level: number, raw: string, slugger: marked.Slugger): string {
     const tokens: Array<Token> = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`];
     this.tokensUsed.add(tokens[level - 1]);
-    return super.heading(text, level, raw);
+    return super.heading(text, level, raw, slugger);
   }
 
   hr(): string {
