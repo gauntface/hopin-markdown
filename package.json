@@ -19,7 +19,7 @@
     "@hopin/wbt-ts-node": "0.0.20",
     "@types/fs-extra": "7.0.0",
     "@types/marked": "0.6.5",
-    "@types/prismjs": "1.9.1",
+    "@types/prismjs": "1.16.0",
     "ava": "1.4.1",
     "coveralls": "3.0.3",
     "fs-extra": "8.0.1",
@@ -33,6 +33,7 @@
     "@types/glob": "^7.1.1",
     "chalk": "^2.4.1",
     "marked": "^0.6.0",
+    "node-html-parser": "^1.1.15",
     "prismjs": "^1.15.0"
   },
   "keywords": [

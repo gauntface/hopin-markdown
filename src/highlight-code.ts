@@ -4,7 +4,7 @@ import {logger} from './utils/logger';
 
 type HighlightedCode = {
   html: string
-}
+};
 
 // TODO: Can we provide additional styles or notes on the procuded markdown?
 
@@ -19,7 +19,7 @@ export function highlightCode(code: string, lang: string): HighlightedCode {
         code = lines.join('\n');
       }
       default:
-        logger.debug(`No language detected in: ${firstLine}`)
+        logger.debug(`No language detected in: ${firstLine}`);
     }
   }
 
@@ -39,7 +39,7 @@ export function highlightCode(code: string, lang: string): HighlightedCode {
   }
 
   try {
-    const highlightedCode = prism.highlight(code, prismLang);
+    const highlightedCode = prism.highlight(code, prismLang, lang);
     return {
       html: highlightedCode,
     };

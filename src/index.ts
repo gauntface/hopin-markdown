@@ -1,22 +1,20 @@
 import * as path from 'path';
 
-import {logger} from './utils/logger';
 import {marked} from './utils/marked-promise';
-import {CustomRender, Token} from './custom-renderer';
-
-export {Token};
+import {CustomRender} from './custom-renderer';
 
 export type Render = {
   html: string
-  tokens: Array<Token>
-}
+  tokens: string[]
+};
 
 export type RenderOpts = {
   staticDir?: string
-}
+};
 
+// tslint:disable-next-line:no-any
 export async function renderMarkdown(markdown: any, opts: RenderOpts = {}): Promise<Render> {
-  if (typeof markdown != 'string') {
+  if (typeof markdown !== 'string') {
     throw new Error(`You must provide a string to renderMarkdown(); got ${JSON.stringify(markdown)}` );
   }
 

@@ -8,6 +8,6 @@ export function marked(src: string, options?: markedOrig.MarkedOptions): Promise
         return;
       }
       resolve(result);
-    })
-  })
+    });
+  });
 }
