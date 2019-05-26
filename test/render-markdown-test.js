@@ -132,7 +132,7 @@ test('renderMarkdown() should render horizontal rule', async (t) => {
 test('renderMarkdown() should render html', async (t) => {
 	const render = await renderMarkdown('Hello World\n<div>This is HTML</div>');
   t.deepEqual(render.html, '<p>Hello World</p>\n<div>This is HTML</div>');
-  t.deepEqual(render.tokens, ['p', 'rawhtml'].sort());
+  t.deepEqual(render.tokens, ['p', 'div'].sort());
 });
 
 test('renderMarkdown() should render br', async (t) => {

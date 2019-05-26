@@ -3,76 +3,13 @@ import * as prism from 'prismjs';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
+import { parse, NodeType, TextNode, Node, HTMLElement } from 'node-html-parser';
 
 import {logger} from './utils/logger';
 
 const loadLanguages = require('prismjs/components/index');
 
-export type TokenH1 = 'h1';
-export type TokenH2 = 'h2';
-export type TokenH3 = 'h3';
-export type TokenH4 = 'h4';
-export type TokenH5 = 'h5';
-export type TokenH6 = 'h6';
-export type TokenPre = 'pre';
-export type TokenCode = 'code';
-export type TokenCodeHighlighted = 'code-highlighted';
-export type TokenImg = 'img';
-export type TokenPicture = 'picture';
-export type TokenAsyncImg = 'async-img';
-export type TokenBlockQuote = 'blockquote';
-export type TokenHTML = 'rawhtml';
-export type TokenHR = 'hr';
-export type TokenOL = 'ol';
-export type TokenUL = 'ul';
-export type TokenLI = 'li';
-export type TokenP = 'p';
-export type TokenStrong = 'strong';
-export type TokenEM = 'em';
-export type TokenBR = 'br';
-export type TokenDel = 'del';
-export type TokenA = 'a';
-export type TokenTable = 'table';
-export type TokenTHead = 'thead';
-export type TokenTBody = 'tbody';
-export type TokenTR = 'tr';
-export type TokenTD = 'td';
-export type TokenTH = 'th';
-
-export type Token =
-  TokenH1 |
-  TokenH2 |
-  TokenH3 |
-  TokenH4 |
-  TokenH5 |
-  TokenH6 |
-  TokenPre |
-  TokenCode |
-  TokenCodeHighlighted |
-  TokenImg |
-  TokenAsyncImg |
-  TokenPicture |
-  TokenBlockQuote |
-  TokenHTML |
-  TokenHR |
-  TokenOL |
-  TokenUL |
-  TokenLI |
-  TokenP |
-  TokenStrong |
-  TokenEM |
-  TokenBR |
-  TokenDel |
-  TokenA |
-  TokenTable |
-  TokenTHead |
-  TokenTBody |
-  TokenTR |
-  TokenTD |
-  TokenTH
-;
-
-const PrismLanguages = [
+const PRISM_LANGUAGES = [
   'javascript',
   'python',
   'css',
@@ -85,24 +22,24 @@ const PrismLanguages = [
   'sass',
 ];
 
-const SupportedLanguages = [
-  ...PrismLanguages,
+const SUPPORTED_LANGUAGES = [
+  ...PRISM_LANGUAGES,
   'html',
   'xml',
 ];
 
 // Prism does not load certain languages but will highlight them
 // hence the seperate lists
-loadLanguages(PrismLanguages);
+loadLanguages(PRISM_LANGUAGES);
 
 export class CustomRender extends marked.Renderer {
-  private tokensUsed: Set<Token>
-  private staticDir: string|null
+  private tokensUsed: Set<string>;
+  private staticDir: string|null;
 
   constructor(staticDir: string|null) {
     super();
     this.staticDir = staticDir;
-    this.tokensUsed = new Set<Token>([]);
+    this.tokensUsed = new Set<string>([]);
   }
 
   code(code: string, language: string, isEscaped: boolean): string {
@@ -111,7 +48,7 @@ export class CustomRender extends marked.Renderer {
 
     // If it's an unknown / unsupported language, prevent extra markup that
     // won't get used.
-    if (language && SupportedLanguages.indexOf(language) == -1) {
+    if (language && SUPPORTED_LANGUAGES.indexOf(language) === -1) {
       logger.warn(`lanugage '${language}' was not identified for syntax highlighting.`);
       language = null;
     }
@@ -136,7 +73,7 @@ export class CustomRender extends marked.Renderer {
 
     if (path.extname(href) === '.gif') {
       this.tokensUsed.add(`async-img`);
-      return `<img data-src="${href}" alt="${text}">`
+      return `<img data-src="${href}" alt="${text}">`;
     }
 
     if (href.indexOf('http') === 0 || !this.staticDir) {
@@ -150,7 +87,7 @@ export class CustomRender extends marked.Renderer {
       if (stats.isDirectory()) {
         const availableImages = glob.sync('*.*', {
           cwd: imgDir,
-        })
+        });
 
         const nonWebPImages = availableImages.filter((availableImage) => {
           return !(path.extname(availableImage) === '.webp');
@@ -160,14 +97,13 @@ export class CustomRender extends marked.Renderer {
         });
 
         let largestSrc: string|null = null;
-        let largestWidth: number = 0;
+        let largestWidth = 0;
         const srcSet = nonWebPImages.map((imagePath) => {
           const imgUrl = path.join(
             href,
             imagePath
           );
-          const imgWidth = parseInt(
-            path.basename(imagePath, path.extname(imagePath)), 10);
+          const imgWidth = Number(path.basename(imagePath, path.extname(imagePath)));
 
           if (!largestSrc || largestWidth < imgWidth) {
             largestSrc = imgUrl;
@@ -182,8 +118,7 @@ export class CustomRender extends marked.Renderer {
             href,
             imagePath
           );
-          const imgWidth = parseInt(
-            path.basename(imagePath, path.extname(imagePath)), 10);
+          const imgWidth = Number(path.basename(imagePath, path.extname(imagePath)));
 
           return `${imgUrl} ${imgWidth}w`;
         }).join(', ');
@@ -214,12 +149,18 @@ export class CustomRender extends marked.Renderer {
   }
 
   html(html: string): string {
-    this.tokensUsed.add('rawhtml');
+    const tokens = getHTMLTags(html);
+    for (const t of tokens) {
+      if (!t) {
+        continue;
+      }
+      this.tokensUsed.add(t.toLowerCase().trim());
+    }
     return super.html(html);
   }
 
   heading(text: string, level: number, raw: string, slugger: marked.Slugger): string {
-    const tokens: Array<Token> = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`];
+    const tokens: string[] = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`];
     this.tokensUsed.add(tokens[level - 1]);
     return super.heading(text, level, raw, slugger);
   }
@@ -283,7 +224,7 @@ export class CustomRender extends marked.Renderer {
 
   br(): string {
     this.tokensUsed.add('br');
-    return super.br()
+    return super.br();
   }
 
   del(text: string): string {
@@ -300,4 +241,35 @@ export class CustomRender extends marked.Renderer {
   getTokens() {
     return Array.from(this.tokensUsed);
   }
+}
+
+function getHTMLTags(html: string): string[] {
+  const root = parse(html);
+  if (root.nodeType !== NodeType.ELEMENT_NODE) {
+    return [];
+  }
+
+  const tags: string[] = [];
+  const htmlRoot = root as HTMLElement;
+  tags.push(htmlRoot.tagName);
+  for (const c of htmlRoot.childNodes) {
+    const ts = getHTMLTokensFromNode(c);
+    tags.push(...ts);
+  }
+  return tags;
+}
+
+function getHTMLTokensFromNode(node: Node): string[] {
+  if (node.nodeType !== NodeType.ELEMENT_NODE) {
+    return [];
+  }
+
+  const tags: string[] = [];
+  const htmlNode = node as HTMLElement;
+  tags.push(htmlNode.tagName);
+  for (const c of htmlNode.childNodes) {
+    const ts = getHTMLTokensFromNode(c);
+    tags.push(...ts);
+  }
+  return tags;
 }
