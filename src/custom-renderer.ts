@@ -56,7 +56,7 @@ export class CustomRender extends marked.Renderer {
     if (language) {
       const prismLang = prism.languages[language];
       try {
-        code = prism.highlight(code, prismLang);
+        code = prism.highlight(code, prismLang, language);
         isEscaped = true;
         this.tokensUsed.add('code-highlighted');
       } catch(err) {

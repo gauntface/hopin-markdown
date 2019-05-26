@@ -16,13 +16,13 @@
     ]
   },
   "devDependencies": {
-    "@hopin/wbt-ts-node": "0.0.19",
-    "@types/fs-extra": "5.1.0",
+    "@hopin/wbt-ts-node": "0.0.20",
+    "@types/fs-extra": "7.0.0",
     "@types/marked": "0.6.5",
-    "@types/prismjs": "1.9.1",
+    "@types/prismjs": "1.16.0",
     "ava": "1.4.1",
     "coveralls": "3.0.3",
-    "fs-extra": "8.0.0",
+    "fs-extra": "8.0.1",
     "gulp": "4.0.2",
     "nyc": "14.1.1",
     "sinon": "7.3.2",

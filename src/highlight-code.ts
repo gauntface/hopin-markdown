@@ -39,7 +39,7 @@ export function highlightCode(code: string, lang: string): HighlightedCode {
   }
 
   try {
-    const highlightedCode = prism.highlight(code, prismLang);
+    const highlightedCode = prism.highlight(code, prismLang, lang);
     return {
       html: highlightedCode,
     };
