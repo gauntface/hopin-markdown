@@ -3,7 +3,7 @@ import * as prism from 'prismjs';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
-import { parse, NodeType, TextNode, Node, HTMLElement } from 'node-html-parser';
+import { parse, NodeType, Node, HTMLElement } from 'node-html-parser';
 
 import {logger} from './utils/logger';
 
