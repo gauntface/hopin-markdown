@@ -3,11 +3,6 @@ import * as path from 'path';
 import {marked} from './utils/marked-promise';
 import {CustomRender} from './custom-renderer';
 
-/*export type Render = {
-  html: string
-  tokens: string[]
-};*/
-
 export type RenderOpts = {
   staticDir?: string
 };
@@ -24,10 +19,5 @@ export async function renderMarkdown(markdown: any, opts: RenderOpts = {}): Prom
 
   const renderer = new CustomRender(opts.staticDir);
   const result = await marked(markdown, {renderer});
-  // const tokens = renderer.getTokens();
-  /* return {
-    html: result.trim(),
-    tokens: tokens.sort(),
-  };*/
   return result.trim();
 }
