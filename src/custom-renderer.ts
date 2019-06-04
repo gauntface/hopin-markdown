@@ -33,18 +33,18 @@ const SUPPORTED_LANGUAGES = [
 loadLanguages(PRISM_LANGUAGES);
 
 export class CustomRender extends marked.Renderer {
-  private tokensUsed: Set<string>;
+  // private tokensUsed: Set<string>;
   private staticDir: string|null;
 
   constructor(staticDir: string|null) {
     super();
     this.staticDir = staticDir;
-    this.tokensUsed = new Set<string>([]);
+    // this.tokensUsed = new Set<string>([]);
   }
 
   code(code: string, language: string, isEscaped: boolean): string {
-    this.tokensUsed.add('pre');
-    this.tokensUsed.add('code');
+    //this.tokensUsed.add('pre');
+    //this.tokensUsed.add('code');
 
     // If it's an unknown / unsupported language, prevent extra markup that
     // won't get used.
@@ -58,7 +58,7 @@ export class CustomRender extends marked.Renderer {
       try {
         code = prism.highlight(code, prismLang, language);
         isEscaped = true;
-        this.tokensUsed.add('code-highlighted');
+        // this.tokensUsed.add('code-highlighted');
       } catch(err) {
         language = null;
         logger.warn(`An error occured while highlighting code with Prism:`, err);
@@ -69,10 +69,10 @@ export class CustomRender extends marked.Renderer {
   }
 
   image(href: string, title: string, text: string): string {
-    this.tokensUsed.add(`img`);
+    // this.tokensUsed.add(`img`);
 
     if (path.extname(href) === '.gif') {
-      this.tokensUsed.add(`async-img`);
+      // this.tokensUsed.add(`async-img`);
       return `<img data-src="${href}" alt="${text}">`;
     }
 
@@ -131,7 +131,7 @@ export class CustomRender extends marked.Renderer {
         htmlMarkup += `<img src="${largestSrc}" alt="${text}" />`;
         htmlMarkup += '</picture>';
 
-        this.tokensUsed.add('picture');
+        // this.tokensUsed.add('picture');
 
         return htmlMarkup;
       }
@@ -144,58 +144,58 @@ export class CustomRender extends marked.Renderer {
   // Methods are this are here just to collect tokens
 
   blockquote(quote: string): string {
-    this.tokensUsed.add('blockquote');
+    // this.tokensUsed.add('blockquote');
     return super.blockquote(quote);
   }
 
   html(html: string): string {
-    const tokens = getHTMLTags(html);
+    /* const tokens = getHTMLTags(html);
     for (const t of tokens) {
       if (!t) {
         continue;
       }
-      this.tokensUsed.add(t.toLowerCase().trim());
-    }
+      // this.tokensUsed.add(t.toLowerCase().trim());
+    }*/
     return super.html(html);
   }
 
   heading(text: string, level: number, raw: string, slugger: marked.Slugger): string {
-    const tokens: string[] = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`];
-    this.tokensUsed.add(tokens[level - 1]);
+    // const tokens: string[] = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`];
+    // this.tokensUsed.add(tokens[level - 1]);
     return super.heading(text, level, raw, slugger);
   }
 
   hr(): string {
-    this.tokensUsed.add(`hr`);
+    // this.tokensUsed.add(`hr`);
     return super.hr();
   }
 
   list(body: string, ordered: boolean, start: number): string {
-    this.tokensUsed.add(ordered ? `ol` : `ul`);
+    // this.tokensUsed.add(ordered ? `ol` : `ul`);
     return super.list(body, ordered, start);
   }
 
   listitem(text: string): string {
-    this.tokensUsed.add(`li`);
+    // this.tokensUsed.add(`li`);
     return super.listitem(text);
   }
 
   paragraph(text: string): string {
-    this.tokensUsed.add(`p`);
+    // this.tokensUsed.add(`p`);
     return super.paragraph(text);
   }
 
   table(header: string, body: string): string {
-    this.tokensUsed.add(`table`);
-    this.tokensUsed.add(`thead`);
+    // this.tokensUsed.add(`table`);
+    // this.tokensUsed.add(`thead`);
     if (body) {
-      this.tokensUsed.add(`tbody`);
+      // this.tokensUsed.add(`tbody`);
     }
     return super.table(header, body);
   }
 
   tablerow(content: string): string {
-    this.tokensUsed.add(`tr`);
+    // this.tokensUsed.add(`tr`);
     return super.tablerow(content);
   }
 
@@ -203,47 +203,47 @@ export class CustomRender extends marked.Renderer {
       header: boolean;
       align: 'center' | 'left' | 'right' | null;
   }): string {
-    this.tokensUsed.add(flags.header ? `th` : `td`);
+    // this.tokensUsed.add(flags.header ? `th` : `td`);
     return super.tablecell(content, flags);
   }
 
   strong(text: string): string {
-    this.tokensUsed.add(`strong`);
+    // this.tokensUsed.add(`strong`);
     return super.strong(text);
   }
 
   em(text: string): string {
-    this.tokensUsed.add(`em`);
+    // this.tokensUsed.add(`em`);
     return super.em(text);
   }
 
   codespan(code: string): string {
-    this.tokensUsed.add(`code`);
+    // this.tokensUsed.add(`code`);
     return super.codespan(code);
   }
 
   br(): string {
-    this.tokensUsed.add('br');
+    // this.tokensUsed.add('br');
     return super.br();
   }
 
   del(text: string): string {
-    this.tokensUsed.add(`del`);
+    // this.tokensUsed.add(`del`);
     return super.del(text);
   }
 
   link(href: string, title: string, text: string): string {
-    this.tokensUsed.add(`a`);
+    // this.tokensUsed.add(`a`);
     return super.link(href, title, text);
   }
 
   // Custom methods after this
-  getTokens() {
+  /*getTokens() {
     return Array.from(this.tokensUsed);
-  }
+  }*/
 }
 
-function getHTMLTags(html: string): string[] {
+/*function getHTMLTags(html: string): string[] {
   const root = parse(html);
   if (root.nodeType !== NodeType.ELEMENT_NODE) {
     return [];
@@ -257,9 +257,9 @@ function getHTMLTags(html: string): string[] {
     tags.push(...ts);
   }
   return tags;
-}
+}*/
 
-function getHTMLTokensFromNode(node: Node): string[] {
+/* function getHTMLTokensFromNode(node: Node): string[] {
   if (node.nodeType !== NodeType.ELEMENT_NODE) {
     return [];
   }
@@ -272,4 +272,4 @@ function getHTMLTokensFromNode(node: Node): string[] {
     tags.push(...ts);
   }
   return tags;
-}
+}*/
