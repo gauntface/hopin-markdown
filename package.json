@@ -20,7 +20,7 @@
     "@types/fs-extra": "7.0.0",
     "@types/marked": "0.6.5",
     "@types/prismjs": "1.16.0",
-    "ava": "1.4.1",
+    "ava": "2.1.0",
     "coveralls": "3.0.4",
     "fs-extra": "8.0.1",
     "gulp": "4.0.2",
