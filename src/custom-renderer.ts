@@ -33,10 +33,12 @@ loadLanguages(PRISM_LANGUAGES);
 
 export class CustomRender extends marked.Renderer {
   private staticDir: string|null;
+  private imgCache: string[];
 
   constructor(staticDir: string|null) {
     super();
     this.staticDir = staticDir;
+    this.imgCache = [];
   }
 
   code(code: string, language: string, isEscaped: boolean): string {
@@ -62,71 +64,73 @@ export class CustomRender extends marked.Renderer {
   }
 
   image(href: string, title: string, text: string): string {
-    if (path.extname(href) === '.gif') {
-      return `<img data-src="${href}" alt="${text}">`;
-    }
+    let imgMarkup = super.image(href, title, text);
+    if (href.indexOf('http') !== 0 && this.staticDir) {
+      // Internal image and we have a static dir
+      const imgDir = path.join(this.staticDir, href);
+      try {
+        const stats = fs.statSync(imgDir);
+        if (stats.isDirectory()) {
+          const availableImages = glob.sync('*.*', {
+            cwd: imgDir,
+          });
 
-    if (href.indexOf('http') === 0 || !this.staticDir) {
-      // External image, no src-set
-      return super.image(href, title, text);
-    }
+          const nonWebPImages = availableImages.filter((availableImage) => {
+            return !(path.extname(availableImage) === '.webp');
+          });
+          const webPImages = availableImages.filter((availableImage) => {
+            return (path.extname(availableImage) === '.webp');
+          });
 
-    const imgDir = path.join(this.staticDir, href);
-    try {
-      const stats = fs.statSync(imgDir);
-      if (stats.isDirectory()) {
-        const availableImages = glob.sync('*.*', {
-          cwd: imgDir,
-        });
+          let largestSrc: string|null = null;
+          let largestWidth = 0;
+          const srcSet = nonWebPImages.map((imagePath) => {
+            const imgUrl = path.join(
+              href,
+              imagePath
+            );
+            const imgWidth = Number(path.basename(imagePath, path.extname(imagePath)));
+            if (isNaN(imgWidth)) {
+              return null;
+            }
+            if (!largestSrc || largestWidth < imgWidth) {
+              largestSrc = imgUrl;
+              largestWidth = imgWidth;
+            }
 
-        const nonWebPImages = availableImages.filter((availableImage) => {
-          return !(path.extname(availableImage) === '.webp');
-        });
-        const webPImages = availableImages.filter((availableImage) => {
-          return (path.extname(availableImage) === '.webp');
-        });
+            return `${imgUrl} ${imgWidth}w`;
+          }).filter((value) => value != null).join(', ');
 
-        let largestSrc: string|null = null;
-        let largestWidth = 0;
-        const srcSet = nonWebPImages.map((imagePath) => {
-          const imgUrl = path.join(
-            href,
-            imagePath
-          );
-          const imgWidth = Number(path.basename(imagePath, path.extname(imagePath)));
+          const webpSrcSet = webPImages.map((imagePath) => {
+            const imgUrl = path.join(
+              href,
+              imagePath
+            );
+            const imgWidth = Number(path.basename(imagePath, path.extname(imagePath)));
+            if (isNaN(imgWidth)) {
+              return null;
+            }
+            return `${imgUrl} ${imgWidth}w`;
+          }).filter((value) => value != null).join(', ');
 
-          if (!largestSrc || largestWidth < imgWidth) {
-            largestSrc = imgUrl;
-            largestWidth = imgWidth;
+          let htmlMarkup = '<picture>';
+          if (webpSrcSet) {
+            htmlMarkup += `<source srcset="${webpSrcSet}" sizes="100vw" type="image/webp">`;
           }
+          htmlMarkup += `<source srcset="${srcSet}" sizes="100vw">`;
+          htmlMarkup += `<img src="${largestSrc}" alt="${text}" />`;
+          htmlMarkup += '</picture>';
 
-          return `${imgUrl} ${imgWidth}w`;
-        }).join(', ');
-
-        const webpSrcSet = webPImages.map((imagePath) => {
-          const imgUrl = path.join(
-            href,
-            imagePath
-          );
-          const imgWidth = Number(path.basename(imagePath, path.extname(imagePath)));
-
-          return `${imgUrl} ${imgWidth}w`;
-        }).join(', ');
-
-        let htmlMarkup = '<picture>';
-        if (webpSrcSet) {
-          htmlMarkup += `<source srcset="${webpSrcSet}" type="image/webp">`;
+          imgMarkup = htmlMarkup;
         }
-        htmlMarkup += `<source srcset="${srcSet}">`;
-        htmlMarkup += `<img src="${largestSrc}" alt="${text}" />`;
-        htmlMarkup += '</picture>';
-
-        return htmlMarkup;
-      }
-    } catch (err) {
-      // NOOP
+      } catch (err) {
+        // NOOP
+      }      
     }
-    return super.image(href, title, text);
+
+    this.imgCache.push(imgMarkup);
+
+    return imgMarkup;
   }
 
   // Methods are this are here just to collect tokens
@@ -156,6 +160,12 @@ export class CustomRender extends marked.Renderer {
   }
 
   paragraph(text: string): string {
+    if (this.imgCache.indexOf(text) !== -1) {
+      // If the paragraph contains one of our images, add
+      // a utility class incase styling is desired.
+      return `<p class="__hopin__u-img">${text}</p>`;
+    }
+
     return super.paragraph(text);
   }
 

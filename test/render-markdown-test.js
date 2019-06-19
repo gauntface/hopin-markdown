@@ -155,31 +155,26 @@ test('renderMarkdown() should render full table', async (t) => {
 
 test('renderMarkdown() should render image', async (t) => {
   const render = await renderMarkdown(`![Alt Text](./images/example.png)`);
-  t.deepEqual(render, '<p><img src="./images/example.png" alt="Alt Text"></p>');
-});
-
-test('renderMarkdown() should render HTML img with gif as data-src', async (t) => {
-	const render = await renderMarkdown(`![Alt Text](./images/example.gif)`);
-  t.deepEqual(render, '<p><img data-src="./images/example.gif" alt="Alt Text"></p>');
+  t.deepEqual(render, '<p class="__hopin__u-img"><img src="./images/example.png" alt="Alt Text"></p>');
 });
 
 test('renderMarkdown() should render image with http:// at start as plain image', async (t) => {
   const render = await renderMarkdown(`![Alt Text](http://example.com/images/example.png)`);
-  t.deepEqual(render, '<p><img src="http://example.com/images/example.png" alt="Alt Text"></p>');
+  t.deepEqual(render, '<p class="__hopin__u-img"><img src="http://example.com/images/example.png" alt="Alt Text"></p>');
 });
 
 test('renderMarkdown() should render image as src set if image is available', async (t) => {
   const render = await renderMarkdown(`![Alt Text](/picture-sets/basic.jpg)`, {
     staticDir: path.join(__dirname, 'static'),
   });
-  t.deepEqual(render, '<p><picture><source srcset="/picture-sets/basic.jpg/1.webp 1w, /picture-sets/basic.jpg/2.webp 2w" type="image/webp"><source srcset="/picture-sets/basic.jpg/1.jpg 1w, /picture-sets/basic.jpg/2.jpg 2w"><img src="/picture-sets/basic.jpg/2.jpg" alt="Alt Text" /></picture></p>');
+  t.deepEqual(render, '<p class="__hopin__u-img"><picture><source srcset="/picture-sets/basic.jpg/1.webp 1w, /picture-sets/basic.jpg/2.webp 2w" sizes="100vw" type="image/webp"><source srcset="/picture-sets/basic.jpg/1.jpg 1w, /picture-sets/basic.jpg/2.jpg 2w" sizes="100vw"><img src="/picture-sets/basic.jpg/2.jpg" alt="Alt Text" /></picture></p>');
 });
 
 test('renderMarkdown() should handle the image being a file instead of a directory', async (t) => {
   const render = await renderMarkdown(`![Alt Text](/picture-sets/non-directory-image.jpg)`, {
     staticDir: path.join(__dirname, 'static'),
   });
-  t.deepEqual(render, '<p><img src="/picture-sets/non-directory-image.jpg" alt="Alt Text"></p>');
+  t.deepEqual(render, '<p class="__hopin__u-img"><img src="/picture-sets/non-directory-image.jpg" alt="Alt Text"></p>');
 });
 
 const sandbox = sinon.createSandbox();
@@ -192,7 +187,7 @@ test.afterEach.always(() => {
     sandbox.restore();
 });
 
-test.serial('renderMarkdown() should render plain code block is prism throws an error', async (t) => {
+test.serial('renderMarkdown() should render plain code block if prism throws an error', async (t) => {
   const prism = require("prismjs");
   sandbox.stub(prism, 'highlight').callsFake(() => {
     throw new Error('prism.highlight() error');
