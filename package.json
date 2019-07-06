@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "ava": "npm run build && nyc ava ./test/**/*-test.js --verbose",
+    "ava": "npm run build && nyc ava --verbose",
     "build": "gulp build",
     "lint": "tslint 'src/**/*'",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -10,9 +10,20 @@
     "access": "public"
   },
   "nyc": {
+    "extension": [
+      ".ts"
+    ],
     "reporter": [
       "text",
       "html"
+    ],
+    "exclude": [
+      "test/**/*"
+    ]
+  },
+  "ava": {
+    "files": [
+      "./test/**/*-test.js"
     ]
   },
   "devDependencies": {
@@ -20,7 +31,7 @@
     "@types/fs-extra": "8.0.0",
     "@types/marked": "0.6.5",
     "@types/prismjs": "1.16.0",
-    "ava": "1.4.1",
+    "ava": "2.1.0",
     "coveralls": "3.0.4",
     "fs-extra": "8.1.0",
     "gulp": "4.0.2",
