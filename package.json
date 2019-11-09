@@ -42,7 +42,7 @@
   "dependencies": {
     "@hopin/logger": "^2.0.0",
     "@types/glob": "^7.1.1",
-    "chalk": "^2.4.1",
+    "chalk": "^3.0.0",
     "marked": "^0.7.0",
     "prismjs": "^1.15.0"
   },
