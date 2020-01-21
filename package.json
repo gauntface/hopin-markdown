@@ -37,7 +37,7 @@
     "gulp": "4.0.2",
     "nyc": "15.0.0",
     "sinon": "8.1.0",
-    "tslint": "5.20.1"
+    "tslint": "6.0.0"
   },
   "dependencies": {
     "@hopin/logger": "^2.0.0",
